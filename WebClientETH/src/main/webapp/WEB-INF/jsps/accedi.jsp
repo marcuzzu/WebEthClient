@@ -7,16 +7,19 @@
 <title>Insert title here</title>
 
  <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+ 
+  <script src="js/acced.js"></script>
 
 </head>
 <body>
 
 	
-	<input type="file" name="keyStoreFile" id="keyStoreFile"/><br/>
 
 	<form id="accessForm" method="POST" action="/uploadKey" >
+	<input type="file" name="keyStoreFile" id="keyStoreFile" required="true"/><br/>
 	    <input id="keyStoreString" type="hidden" name="keystore"/><br/>
-	    <input type="password" name="password"/><br/><br/>
+	    <input type="password" name="password" required="true"/><br/><br/>
 	    <input type="submit" value="Submit" />
 	</form>
 		

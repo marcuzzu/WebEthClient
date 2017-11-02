@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
 import org.ucalproject.core.eth.MyWalletUtils;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
@@ -37,9 +38,17 @@ public class AccountController {
         	if(credentials!=null) {
         		String encodeToUrlSafeString = Base64Utils.encodeToUrlSafeString(keystore.getBytes("UTF-8"));        		
         		response.addCookie(new Cookie("keystore", encodeToUrlSafeString));
-        		response.addCookie(new Cookie("address", credentials.getAddress()));        		
+        		response.addCookie(new Cookie("address", credentials.getAddress()));     
+        		//remove request if exists...
+        		Cookie cookie = WebUtils.getCookie(request,"failCredentials");
+        		if(cookie!=null && cookie.getValue().equals("true")) {
+        			Cookie tempC = new Cookie("failCredentials","false");
+        			tempC.setMaxAge(0);
+        			response.addCookie(tempC);
+        		}
         	}else {
-        		//TODO manage in some way an error...
+        		response.addCookie(new Cookie("failCredentials","true"));
+                return new ModelAndView("accedi");
         	}
          return new ModelAndView("home");
     }
