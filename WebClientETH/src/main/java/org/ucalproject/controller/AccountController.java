@@ -1,31 +1,37 @@
 package org.ucalproject.controller;
 
+import java.math.BigInteger;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
+import org.ucalproject.core.eth.MyEncryptionUtils;
 import org.ucalproject.core.eth.MyWalletUtils;
+import org.ucalproject.core.eth.MyWalletUtils2;
+import org.ucalproject.model.dto.NewWalletDTO;
+import org.ucalproject.model.dto.RestoreWalletDTO;
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.ECKeyPair;
-import org.web3j.crypto.Wallet;
-import org.web3j.crypto.WalletFile;
-import org.web3j.crypto.WalletUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.web3j.utils.Numeric;
 
 @Controller
 public class AccountController {
 
 	@Autowired
 	private MyWalletUtils myWalletUtils;
+	
+	@Autowired
+	private MyWalletUtils2 myWalletUtils2;
 	
 	
     @PostMapping("/uploadKey") 
@@ -52,5 +58,40 @@ public class AccountController {
         	}
          return new ModelAndView("home");
     }
+    
+    
+	@RequestMapping("/api/createNewAccount" )
+	public ResponseEntity<?> postCreateNewAccount() throws Exception{
+
+		Credentials createNewWallet = myWalletUtils2.createNewWallet();
+		BigInteger privateKey = createNewWallet.getEcKeyPair().getPrivateKey();
+		
+		String hexStringNoPrefix = Numeric.toHexStringNoPrefix(privateKey);
+		
+		NewWalletDTO newWalletDTO=new NewWalletDTO();
+		newWalletDTO.setAddress(createNewWallet.getAddress());
+		newWalletDTO.setPrivateKey(hexStringNoPrefix);
+		newWalletDTO.setEncryptedPrivateKey(MyEncryptionUtils.encryptString(hexStringNoPrefix));
+
+		
+		return ResponseEntity.ok(newWalletDTO);
+    }
+	
+	@RequestMapping("/api/restoreAccount" )
+	public ResponseEntity<?> postrestoreAccount(@RequestBody String privateKeyInput) throws Exception{
+
+		
+		Credentials credentials = myWalletUtils2.restoreWalletFromPrivateKey(privateKeyInput);
+				
+		RestoreWalletDTO restored=new RestoreWalletDTO();
+		restored.setAddress(credentials.getAddress());
+		restored.setEncryptedPrivateKey(MyEncryptionUtils.encryptString(privateKeyInput));
+
+		return ResponseEntity.ok(restored);
+    }
+	
+	
+	
+
 	
 }

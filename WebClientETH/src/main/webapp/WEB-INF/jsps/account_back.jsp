@@ -6,9 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Account</title>
 
- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
- <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
- 
+ <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
 
@@ -16,13 +14,10 @@
 <body>
 
 	<div id="noAccess">
-		<input id="restoreAccount" type="button" value="Accedi" >
+		<input type="button"  onclick="location.href='/accedi.html'" value="Accedi" >
 		</br>
 		<input type="button" id="createNewAccountButton" value="Crea nuovo" >
 	</div>
-
-
-
 	<div id="accessDone">
 		<div class="row">
 			<h3>address</h3> <h3 id="addressText"> </h3>
@@ -33,34 +28,11 @@
 	</div>
 
 
-
-
-
-
-
-	<!-- DIALOG CREATE NEW ACCOUNT -->
-	<div id="dialogCreatedNewAccount" title="New Account">
-		<p>Your new address is:</p>
-		<p id="newAddress"></p>
-		<p>Store your private key in a secure place and don't lose it</p>
-		<p id="newPrivateKey"></p>
-	</div>
-
-
-	<!-- DIALOG RESTORE NEW ACCOUNT -->
-	<div id="dialogRestoreAccount" title="New Account">
-		<label>Insert your private key:</label>
-		<input id="privateKeyInput" type="text">
-		
-	</div>
-
 </body>
 	
 
 <script>
 $( window ).on( "load", function() {
-	
-	initDialogCreatedNewAccount();
 	
 	var checkBalace=false;
 	
@@ -80,18 +52,15 @@ $( window ).on( "load", function() {
 
 });
 
-/****** general *****/
-function initDialogCreatedNewAccount(){	
-  $("#dialogCreatedNewAccount").dialog({
-     autoOpen: false,
-     modal: true
-   });
+
+function initPageLogged(address) {
+	alert("going to create new account");
+    $('#addressText').text(address)
+    pollingFunction();
+    initLogOutButton();
+    checkBalace=true;
 }
- 
 
-
-
-/**** unlogged page ******/
 function initPageUnknow(){
 	checkBalace=false;
     intiCreateNewAddress();	
@@ -105,40 +74,19 @@ function intiCreateNewAddress(){
 	        type: "POST",
 	        url: "/api/createNewAccount",
 	        dataType: 'json',
-	        cache: false,	
+	        cache: false,
 	        success: function (data) {
 	            console.log("SUCCESS : ", data);
 				$('#addressBalance').text(data);
-				$.cookie("keystore", data.encryptedPrivateKey);
-				$.cookie("address", data.address);
-				showPopUpNewAccount(data);
 	        },
 	        error: function (e) {
 	            console.log("ERROR : ", e);  
 	        }
 	    });
-	});	
+	});
 }
 
-function showPopUpNewAccount(data){
-	$('#newAddress').text(data.address)
-	$('#newPrivateKey').text(data.privateKey)
-	$("#dialogCreatedNewAccount").dialog("open");
-}
 
-$('div#dialogCreatedNewAccount').on('dialogclose', function(event) {
-    alert('closed');
-    location.reload();
-});
-
-
-/***logged page ***/
-function initPageLogged(address) {
-    $('#addressText').text(address)
-    pollingFunction();
-    initLogOutButton();
-    checkBalace=true;
-}
 
 //polling function
 function pollingFunction(){
@@ -147,20 +95,39 @@ function pollingFunction(){
 }
 
 function initLogOutButton(){
+	alert("int log ot button");
 	$('#logOutButton').click(function() {
 	  alert( "Handler for .click() called." );
 	  $.removeCookie('keystore', { path: '/' });
 	  $.removeCookie('address', { path: '/' });
+	/*
+	  $.cookie("keystore", null, { path: '/' });
+	  $.cookie("address", null, { path: '/' });
+	  */
 	  location.reload();
 	});
 	
 }
+
+
+
 
 setInterval(function(){
 	pollingFunction()}, 30000)
 	
 function updateBalance(){
 	var getUrl = window.location;
+/*
+	alert('baseURL='+getUrl .protocol + "//" + getUrl.host + "/");
+	$.ajax({
+        type: "post",
+        url: baseURL + '/', //this is my servlet
+        data: "input=" +$('#ip').val()+"&output="+$('#op').val(),
+        success: function(msg){      
+                $('#output').append(msg);
+        }
+    });
+    */
     if(checkBalace){
 		  $.ajax({
 		        type: "GET",

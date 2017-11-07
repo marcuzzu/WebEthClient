@@ -1,11 +1,9 @@
 package org.ucalproject.core.eth;
 
-import javax.servlet.http.Cookie;
-
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.Keys;
 import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletFile;
 import org.web3j.crypto.WalletUtils;
@@ -14,6 +12,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class MyWalletUtils {
+	
+	
+	
+	
+	public Credentials getCredentialsFromPrivateKey() {
+		return null;
+	}
 	
 	
 	public Credentials checkValidKeystoreFile(String password,String keystore) {
@@ -32,7 +37,13 @@ public class MyWalletUtils {
 		return WalletUtils.isValidAddress(address);
 	}
 	
-	public void checkFileLoader() {
-//		WalletUtils.loadCredentials(password, source)
+	
+	public WalletFile createWallet(String password) throws Exception{
+		ECKeyPair ecKeyPair = Keys.createEcKeyPair();
+//		WalletUtils.generateFullNewWalletFile(password, destinationDirectory)
+		return Wallet.createStandard(password, ecKeyPair);
+		
 	}
+	
+	
 }
