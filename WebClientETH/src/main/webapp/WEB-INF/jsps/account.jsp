@@ -8,8 +8,9 @@
 
  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
  <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
- 
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+
 
 
 </head>
@@ -27,15 +28,21 @@
 		<div class="row">
 			<h3>address</h3> <h3 id="addressText"> </h3>
 			<h3>balance</h3> <h3 id="addressBalance"> </h3>
+			
+			<button id="startTransferButton">Transfer</button>
+			<div id="transferEtherDiv" hidden>
+				<label>address to</label>
+				<input id="addressTo" type="text"/>
+				<br/>
+				<label>amount</label>
+				<input id="ammount" type="number"/>
+				<br/>
+				<button id="confirmAmount" >Proceed</button>
+			</div>
+			
 		</div>
-		
 		<button id="logOutButton">log-out</button>
 	</div>
-
-
-
-
-
 
 
 	<!-- DIALOG CREATE NEW ACCOUNT -->
@@ -51,18 +58,59 @@
 	<div id="dialogRestoreAccount" title="New Account">
 		<label>Insert your private key:</label>
 		<input id="privateKeyInput" type="text">
+		<button id="restoreAddressSubmit" value="submit"/>
+		<form action="">
+			
+			<input id="restoreAddressSubmit" type="submit"/>
+		</form>
 		
 	</div>
 
 </body>
-	
+
+
 
 <script>
+//send ethere script
+
+$( window ).on( "load", function() {
+	initTransferDiv();
+});
+
+
+var activeTransfer=false;
+
+function initTransferDiv(){
+	activeTransfer=false;
+	//initButton to show trasfer form
+	$('#startTransferButton').click(function(){
+		$('#startTransferButton').hide();
+		$('#transferEtherDiv').show();
+		activeTransfer=true;
+	});
+
+	//submit trasfer
+	$('#confirmAmount').click(function(){
+		var addressTo=$('#addressTo').val();
+		var amount=$('#ammount').val();
+		alert('address to='+addressTo+"  ammount="+amount)
+		//insert ajax post
+	});
+	
+}
+
+
+
+</script>	
+
+<script>
+
+var checkBalace=false;
+
 $( window ).on( "load", function() {
 	
 	initDialogCreatedNewAccount();
-	
-	var checkBalace=false;
+	initDialogRestoreAccount();
 	
 	var address=$.cookie('address');
 	if (typeof $.cookie('keystore') === 'undefined' || 
@@ -88,19 +136,52 @@ function initDialogCreatedNewAccount(){
    });
 }
  
-
+function initDialogRestoreAccount(){
+	$('#restoreAccount').click(function (){
+		$("#dialogRestoreAccount").dialog("open");
+	});
+	
+	$("#dialogRestoreAccount").dialog({
+	     autoOpen: false,
+	     modal: true
+	   });
+}
 
 
 /**** unlogged page ******/
 function initPageUnknow(){
 	checkBalace=false;
     intiCreateNewAddress();	
+    intiRestoreAddress();	
+}
+
+function intiRestoreAddress(){	
+	$('#restoreAddressSubmit').click(function (){
+		var privKey=$.trim($('#privateKeyInput').val() ) ;
+		alert('privKey='+privKey);
+		$.ajax({
+	        type: "POST",
+	        url: "/api/restoreAccount",
+	        dataType: 'json',
+	        data: privKey,
+	        cache: false,	
+	        success: function (data) {
+	            console.log("SUCCESS : ", data);
+				$.cookie("keystore", data.encryptedPrivateKey);
+				$.cookie("address", data.address);
+	            updateBalance();
+	            alert('restoreAcoountDone');
+	        },
+	        error: function (e) {
+	            console.log("ERROR : ", e); 
+	            alert('ERROR');
+	        }
+	    });
+	});	
 }
 
 function intiCreateNewAddress(){
-	alert("going to create new account");
 	$('#createNewAccountButton').click(function (){
-		alert("going to create new account");
 		$.ajax({
 	        type: "POST",
 	        url: "/api/createNewAccount",
@@ -111,6 +192,7 @@ function intiCreateNewAddress(){
 				$('#addressBalance').text(data);
 				$.cookie("keystore", data.encryptedPrivateKey);
 				$.cookie("address", data.address);
+				updateBalance();
 				showPopUpNewAccount(data);
 	        },
 	        error: function (e) {
@@ -120,6 +202,8 @@ function intiCreateNewAddress(){
 	});	
 }
 
+
+
 function showPopUpNewAccount(data){
 	$('#newAddress').text(data.address)
 	$('#newPrivateKey').text(data.privateKey)
@@ -127,7 +211,6 @@ function showPopUpNewAccount(data){
 }
 
 $('div#dialogCreatedNewAccount').on('dialogclose', function(event) {
-    alert('closed');
     location.reload();
 });
 
@@ -138,6 +221,7 @@ function initPageLogged(address) {
     pollingFunction();
     initLogOutButton();
     checkBalace=true;
+    updateBalance();
 }
 
 //polling function
@@ -148,7 +232,6 @@ function pollingFunction(){
 
 function initLogOutButton(){
 	$('#logOutButton').click(function() {
-	  alert( "Handler for .click() called." );
 	  $.removeCookie('keystore', { path: '/' });
 	  $.removeCookie('address', { path: '/' });
 	  location.reload();
@@ -162,10 +245,11 @@ setInterval(function(){
 function updateBalance(){
 	var getUrl = window.location;
     if(checkBalace){
+    	var address=$.cookie("address");
 		  $.ajax({
-		        type: "GET",
+		        type: "POST",
 		        url: "/api/getBalance",
-		        data: JSON.stringify($.cookie('address')),
+		        data: address,
 		        dataType: 'json',
 		        cache: false,
 		        success: function (data) {

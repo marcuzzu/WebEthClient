@@ -10,16 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ApiController {
 
 	
-	@RequestMapping("/api/getBalance")
-	
-		public ResponseEntity<?> getBalance(
-	            @RequestBody String address, Errors errors) {
-
-	       
-
-	        return ResponseEntity.ok(new String ("3.78690"));
-
-	    }
 	
 	
 	

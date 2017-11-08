@@ -21,6 +21,7 @@ import org.ucalproject.core.eth.MyWalletUtils;
 import org.ucalproject.core.eth.MyWalletUtils2;
 import org.ucalproject.model.dto.NewWalletDTO;
 import org.ucalproject.model.dto.RestoreWalletDTO;
+import org.ucalproject.model.input.CreateTransaction;
 import org.web3j.crypto.Credentials;
 import org.web3j.utils.Numeric;
 
@@ -33,7 +34,8 @@ public class AccountController {
 	@Autowired
 	private MyWalletUtils2 myWalletUtils2;
 	
-	
+
+	/*
     @PostMapping("/uploadKey") 
     public ModelAndView singleFileUpload(@RequestParam("keystore") String keystore,
     		@RequestParam("password") String password,
@@ -58,7 +60,7 @@ public class AccountController {
         	}
          return new ModelAndView("home");
     }
-    
+    */
     
 	@RequestMapping("/api/createNewAccount" )
 	public ResponseEntity<?> postCreateNewAccount() throws Exception{
@@ -77,10 +79,10 @@ public class AccountController {
 		return ResponseEntity.ok(newWalletDTO);
     }
 	
-	@RequestMapping("/api/restoreAccount" )
+	@RequestMapping("/api/restoreAccount")
 	public ResponseEntity<?> postrestoreAccount(@RequestBody String privateKeyInput) throws Exception{
 
-		
+		System.out.println("privateKEy="+privateKeyInput);
 		Credentials credentials = myWalletUtils2.restoreWalletFromPrivateKey(privateKeyInput);
 				
 		RestoreWalletDTO restored=new RestoreWalletDTO();
@@ -90,7 +92,24 @@ public class AccountController {
 		return ResponseEntity.ok(restored);
     }
 	
+	@RequestMapping("/api/getBalance")	
+	public ResponseEntity<?> getBalance(@RequestBody String address) {
+
+       System.out.println("string address="+address);
+       
+        return ResponseEntity.ok(new String ("3.78690"));
+
+    }
+
 	
+	@RequestMapping("/api/sendTransaction")	
+	public ResponseEntity<?> postExecuteTransaction(@RequestBody CreateTransaction transaction) {
+
+       System.out.println(transaction);
+       
+        return ResponseEntity.ok(new String ("3.78690"));
+
+    }
 	
 
 	
