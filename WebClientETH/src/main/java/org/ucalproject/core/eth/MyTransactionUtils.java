@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -11,6 +12,7 @@ import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
+@Service
 public class MyTransactionUtils {
 
 	private static Convert.Unit DEFAULT_UINT=Convert.Unit.ETHER;

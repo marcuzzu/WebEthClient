@@ -3,8 +3,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Account</title>
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
 
  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
  <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
@@ -12,58 +23,72 @@
 
 
 
-
 </head>
-<body>
-
-	<div id="noAccess">
-		<input id="restoreAccount" type="button" value="Accedi" >
-		</br>
-		<input type="button" id="createNewAccountButton" value="Crea nuovo" >
-	</div>
-
-
-
-	<div id="accessDone">
-		<div class="row">
-			<h3>address</h3> <h3 id="addressText"> </h3>
-			<h3>balance</h3> <h3 id="addressBalance"> </h3>
-			
-			<button id="startTransferButton">Transfer</button>
-			<div id="transferEtherDiv" hidden>
-				<label>address to</label>
-				<input id="addressTo" type="text"/>
-				<br/>
-				<label>amount</label>
-				<input id="ammount" type="number"/>
-				<br/>
-				<button id="confirmAmount" >Proceed</button>
+<body >
+	<div class="container-fluid">
+	
+		<div id="noAccess">
+			<div class="row">
+				<div class="col-sm-3"> </div>
+				<div class="col-sm-6">
+					<div class="row">
+						<buton id="restoreAccount" type="button" 
+						class="btn btn-primary btn-blocks btn-l" >Accedi</button>			
+					</div>
+					<div class="row">
+						<buton id="createNewAccountButton" type="button" 
+						class="btn btn-primary btn-blocks btn-l" >Crea nuovo</button>		
+					</div>
+				</div>
+				<div class="col-sm-3"> </div>
 			</div>
+		</div>
+	
+	
+	
+		<div id="accessDone">
+			<div class="row">
+				<h3>address</h3> <h3 id="addressText"> </h3>
+				<h3>balance</h3> <h3 id="addressBalance"> </h3>
+				
+				<button id="startTransferButton">Transfer</button>
+				<div id="transferEtherDiv" hidden>
+					<label>address to</label>
+					<input id="addressTo" type="text"/>
+					<br/>
+					<label>amount</label>
+					<input id="ammount" type="number"/>
+					<br/>
+					<button id="confirmAmount" >Proceed</button>
+				</div>
+				
+			</div>
+			<button id="logOutButton">log-out</button>
+		</div>
+	
+	
+		<!-- DIALOG CREATE NEW ACCOUNT -->
+		<div id="dialogCreatedNewAccount" title="New Account">
+			<p>Your new address is:</p>
+			<p id="newAddress"></p>
+			<p>Store your private key in a secure place and don't lose it</p>
+			<p id="newPrivateKey"></p>
+		</div>
+	
+	
+		<!-- DIALOG RESTORE NEW ACCOUNT -->
+		<div id="dialogRestoreAccount" title="New Account">
+			<label>Insert your private key:</label>
+			<input id="privateKeyInput" type="text">
+			<button id="restoreAddressSubmit" value="submit"/>
+			<form action="">
+				
+				<input id="restoreAddressSubmit" type="submit"/>
+			</form>
 			
 		</div>
-		<button id="logOutButton">log-out</button>
-	</div>
-
-
-	<!-- DIALOG CREATE NEW ACCOUNT -->
-	<div id="dialogCreatedNewAccount" title="New Account">
-		<p>Your new address is:</p>
-		<p id="newAddress"></p>
-		<p>Store your private key in a secure place and don't lose it</p>
-		<p id="newPrivateKey"></p>
-	</div>
-
-
-	<!-- DIALOG RESTORE NEW ACCOUNT -->
-	<div id="dialogRestoreAccount" title="New Account">
-		<label>Insert your private key:</label>
-		<input id="privateKeyInput" type="text">
-		<button id="restoreAddressSubmit" value="submit"/>
-		<form action="">
-			
-			<input id="restoreAddressSubmit" type="submit"/>
-		</form>
 		
+		<!-- end container fulid -->
 	</div>
 
 </body>
@@ -91,10 +116,40 @@ function initTransferDiv(){
 
 	//submit trasfer
 	$('#confirmAmount').click(function(){
-		var addressTo=$('#addressTo').val();
-		var amount=$('#ammount').val();
-		alert('address to='+addressTo+"  ammount="+amount)
-		//insert ajax post
+
+		//var addressTo=$('#addressTo').val();
+		//var amount=$('#ammount').val();
+		
+		
+		var requestobject={
+				addressTo:$('#addressTo').val(),
+				amount:$('#ammount').val()
+		};
+//		var requestobject["addressTo"]=addressTo;
+	//	requestobject["amount"]=amount;
+
+		alert('send msg='+JSON.stringify(requestobject));
+		
+		$.ajax({
+	        type: "POST",
+	        url: "/api/sendTransaction",
+	        contentType: "application/json; charset=utf-8",
+	        data: JSON.stringify(requestobject),
+	        cache: false,	
+	        success: function (data) {
+	            console.log("SUCCESS : ", data);
+//				$.cookie("keystore", data.encryptedPrivateKey);
+//				$.cookie("address", data.address);
+	//            updateBalance();
+	            alert('Ajax Done');
+	        },
+	        error: function (e) {
+	            console.log("ERROR : ", e); 
+	            alert('ERROR');
+	        }
+	    });
+			
+		
 	});
 	
 }

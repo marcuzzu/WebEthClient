@@ -7,8 +7,7 @@
 
 
 <link href="/css/main.css" rel="stylesheet"></link>
-<script type="text/javascript"
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 
 

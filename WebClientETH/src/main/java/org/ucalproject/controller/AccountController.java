@@ -6,24 +6,32 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Base64Utils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 import org.ucalproject.core.eth.MyEncryptionUtils;
+import org.ucalproject.core.eth.MyTransactionUtils;
 import org.ucalproject.core.eth.MyWalletUtils;
 import org.ucalproject.core.eth.MyWalletUtils2;
 import org.ucalproject.model.dto.NewWalletDTO;
 import org.ucalproject.model.dto.RestoreWalletDTO;
 import org.ucalproject.model.input.CreateTransaction;
 import org.web3j.crypto.Credentials;
+import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.utils.Numeric;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class AccountController {
@@ -33,6 +41,9 @@ public class AccountController {
 	
 	@Autowired
 	private MyWalletUtils2 myWalletUtils2;
+	
+	@Autowired
+	private MyTransactionUtils myTransactionUtils;
 	
 
 	/*
@@ -101,11 +112,14 @@ public class AccountController {
 
     }
 
-	
-	@RequestMapping("/api/sendTransaction")	
-	public ResponseEntity<?> postExecuteTransaction(@RequestBody CreateTransaction transaction) {
 
-       System.out.println(transaction);
+	@CrossOrigin
+	@RequestMapping(value="/api/sendTransaction", method = RequestMethod.POST, consumes="application/json")	
+	public ResponseEntity<?> postExecuteTransaction(@RequestBody CreateTransaction transaction) throws Exception {
+
+		
+		System.out.println(transaction);
+//	myTransactionUtils.createTransaction(web3j, credentials, toAddress, value);
        
         return ResponseEntity.ok(new String ("3.78690"));
 
