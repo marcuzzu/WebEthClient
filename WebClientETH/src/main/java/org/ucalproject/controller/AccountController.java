@@ -78,7 +78,6 @@ public class AccountController {
 
 		Credentials createNewWallet = myWalletUtils2.createNewWallet();
 		BigInteger privateKey = createNewWallet.getEcKeyPair().getPrivateKey();
-		
 		String hexStringNoPrefix = Numeric.toHexStringNoPrefix(privateKey);
 		
 		NewWalletDTO newWalletDTO=new NewWalletDTO();
@@ -87,19 +86,21 @@ public class AccountController {
 		newWalletDTO.setEncryptedPrivateKey(MyEncryptionUtils.encryptString(hexStringNoPrefix));
 
 		
+		System.err.println("create new ccount:"+newWalletDTO.getAddress()+"\n"+newWalletDTO.getPrivateKey()+"\n");
+		
 		return ResponseEntity.ok(newWalletDTO);
     }
 	
 	@RequestMapping("/api/restoreAccount")
 	public ResponseEntity<?> postrestoreAccount(@RequestBody String privateKeyInput) throws Exception{
 
-		System.out.println("privateKEy="+privateKeyInput);
 		Credentials credentials = myWalletUtils2.restoreWalletFromPrivateKey(privateKeyInput);
 				
 		RestoreWalletDTO restored=new RestoreWalletDTO();
 		restored.setAddress(credentials.getAddress());
 		restored.setEncryptedPrivateKey(MyEncryptionUtils.encryptString(privateKeyInput));
 
+		
 		return ResponseEntity.ok(restored);
     }
 	

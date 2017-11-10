@@ -1,11 +1,44 @@
 @charset "ISO-8859-1";
 
+body {
+	height: 100%;
+    background-color: whitesmoke;
+}
 
 h2 {
 	background-color: blue;
 	color: white
 }
+ .titleUcal {
+ 	text-shadow: 3px 3px 1px black;
+ 	margin-bottom: 0px;
+    margin-top: 0px;
+ 	background-color: rgb(113, 48, 48);
+    border: 2px solid #592323;
+    border-radius: 0.6rem;
+    text-align: center;
+    color: #dfd4c4;
+    font-family: initial;
+ }
  
+ .ucalImage {
+ 	width:100%;
+ 	max-width: 80rem;
+    margin-bottom: 2rem;
+ }
+ 
+ input[type="button"].btn {
+ 	width:30%;
+ 	min-width:4rem;
+ 	box-shadow:1px 1px 3px;
+ }
+ 
+.navContainer {
+	background-color: #e6e6e6;
+	border-radius: 0.4rem;
+    border-bottom: 1px solid black; 
+}
+
 p {
 	color: red;
 }

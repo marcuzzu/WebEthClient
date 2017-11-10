@@ -7,6 +7,11 @@
 
 <title>Account</title>
 
+ <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+ <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+<link href="/css/main.css" rel="stylesheet"></link>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
@@ -17,11 +22,20 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 
- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
- <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
-
+<nav class="navbar navbar-default">
+  <div class="container-fluid navContainer">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">UCAL WALLET</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li ><a href="/">Home</a></li>
+      <li class="noAccess active" ><a href="/account.html">Accedi</a></li>
+      <li class="accessDone active" ><a href="/account.html">Wallet</a></li>
+      <li class="accessDone" ><a id="logOutButton">Logout</a></li>
+    </ul>
+  </div>
+</nav>
 
 </head>
 <body >
@@ -32,12 +46,12 @@
 				<div class="col-sm-3"> </div>
 				<div class="col-sm-6">
 					<div class="row">
-						<buton id="restoreAccount" type="button" 
-						class="btn btn-primary btn-blocks btn-l" >Accedi</button>			
+						<button id="restoreAccountNEW" type="button" class="btn btn-primary btn-block" 
+						data-toggle="modal" data-target="#restoreAccountModal">Accedi</button>			
 					</div>
 					<div class="row">
 						<buton id="createNewAccountButton" type="button" 
-						class="btn btn-primary btn-blocks btn-l" >Crea nuovo</button>		
+						class="btn btn-primary btn-block" >Crea nuovo</button>		
 					</div>
 				</div>
 				<div class="col-sm-3"> </div>
@@ -45,48 +59,148 @@
 		</div>
 	
 	
-	
 		<div id="accessDone">
 			<div class="row">
-				<h3>address</h3> <h3 id="addressText"> </h3>
-				<h3>balance</h3> <h3 id="addressBalance"> </h3>
-				
-				<button id="startTransferButton">Transfer</button>
-				<div id="transferEtherDiv" hidden>
-					<label>address to</label>
-					<input id="addressTo" type="text"/>
-					<br/>
-					<label>amount</label>
-					<input id="ammount" type="number"/>
-					<br/>
-					<button id="confirmAmount" >Proceed</button>
+				<div class="col-sm-2"> </div>
+				<div class="col-sm-8">
+					<div class=form-inline">
+						<label class="control-label" for="addressText">Address</label>
+						<h4 class="form-control" id="addressText"> </h4>
+					</div>
+					<div class=form-inline">
+						<label class="control-label" for="addressBalance">Balance</label>
+						<h4 class="form-control" id="addressBalance"> </h4>
+					</div>	
+					
+					<button id="startTransferButtonNEW" type="button" class="btn btn-primary btn-blocks btn-l" 
+					data-toggle="modal" data-target="#transferEtherModal">Send</button>			
+<!-- 
+					<div id="transferEtherDiv" hidden>
+						<label>address to</label>
+						<input id="addressTo" type="text"/>
+						<br/>
+						<label>amount</label>
+						<input id="ammount" type="number"/>
+						<br/>
+						<button id="confirmAmount" >Proceed</button>
+					</div>
+	-->				
 				</div>
-				
+				<!-- <div class="col-sm-3"> </div> -->
 			</div>
 			<button id="logOutButton">log-out</button>
 		</div>
+		
+	
+	  <!-- Modal Send Trasfer-->
+  <div class="modal fade" id="transferEtherModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Transfer</h4>
+        </div>
+        <form>
+	        <div class="modal-body">
+	          	<div class="form-group">
+				  <label for="addressTo">Address to</label>
+				  <input type="text" pattern=".{1,}" class="form-control col-sm-8" id="addressTo"></input>
+				</div>
+				<div class="form-group">
+				  <label for="ammount">Amount</label>
+				  <input type="number" pattern=".{1,}" required="required"  class="form-control col-sm-8" id="ammount"></input>
+				</div>
+	          
+	        </div>
+	        <div class="modal-footer">
+	        
+	        <button type="submit" class="btn btn-primary" data-dismiss="modal" id="confirmAmount">Submit</button>
+	          <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+	        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+	
+	
+
+  <!-- Modal Restore Account-->
+  <div class="modal fade" id="restoreAccountModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Restore Address</h4>
+        </div>
+        <form>
+	        <div class="modal-body">
+	          	<div class="form-group">
+				  <label for="privateKeyInput">Your private key:</label>
+				  <input type="text" pattern=".{1,}" class="form-control col-sm-8" id="privateKeyInput"></input>
+				</div>
+	          
+	        </div>
+	        <div class="modal-footer">
+	        
+	        <button type="submit" class="btn btn-primary" data-dismiss="modal" id="restoreAddressSubmit2">Submit</button>
+	          <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+	        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+	
+	
+	
+
+	
+	  <!-- Modal New Account-->
+  <div class="modal fade" id="createdNewAccountModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Created new address</h4>
+        </div>
+	        <div class="modal-body">
+		        <p>Your new address is:</p>
+				<p id="newAddress"></p>
+				<p>Store your private key in a secure place and don't lose it</p>
+				<p id="newPrivateKey"></p>
+	        </div>
+	        <div class="modal-footer">    
+		        <button type="button" class="btn btn-primary" 
+		        data-dismiss="modal" id="createdNewAccountModalButton">Ok</button>
+	        </div>
+      </div>
+    </div>
+  </div>
+
+	
 	
 	
 		<!-- DIALOG CREATE NEW ACCOUNT -->
+<!-- 
 		<div id="dialogCreatedNewAccount" title="New Account">
 			<p>Your new address is:</p>
 			<p id="newAddress"></p>
 			<p>Store your private key in a secure place and don't lose it</p>
 			<p id="newPrivateKey"></p>
 		</div>
+ -->	
 	
 	
 		<!-- DIALOG RESTORE NEW ACCOUNT -->
+<!-- 
 		<div id="dialogRestoreAccount" title="New Account">
 			<label>Insert your private key:</label>
 			<input id="privateKeyInput" type="text">
 			<button id="restoreAddressSubmit" value="submit"/>
 			<form action="">
-				
 				<input id="restoreAddressSubmit" type="submit"/>
-			</form>
-			
+			</form>			
 		</div>
+ -->
 		
 		<!-- end container fulid -->
 	</div>
@@ -98,17 +212,20 @@
 <script>
 //send ethere script
 
-$( window ).on( "load", function() {
+$(document).ready( function() {
 	initTransferDiv();
 });
-
+/* $( window ).on( "load", function() {
+	initTransferDiv();
+});
+ */
 
 var activeTransfer=false;
 
 function initTransferDiv(){
 	activeTransfer=false;
 	//initButton to show trasfer form
-	$('#startTransferButton').click(function(){
+	$('#startTransferButtonNEW').click(function(){
 		$('#startTransferButton').hide();
 		$('#transferEtherDiv').show();
 		activeTransfer=true;
@@ -159,11 +276,16 @@ function initTransferDiv(){
 </script>	
 
 <script>
-
+$(document).ready( function() {
+	initPage();
+});
 var checkBalace=false;
 
-$( window ).on( "load", function() {
-	
+/* $( window ).on( "load", function() {
+	initPage();
+
+});*/
+function initPage(){
 	initDialogCreatedNewAccount();
 	initDialogRestoreAccount();
 	
@@ -173,15 +295,20 @@ $( window ).on( "load", function() {
 		 //no cookie
 			$("#noAccess").show();
 			$("#accessDone").hide();
+			$(".noAccess").show();
+			$(".accessDone").hide();
 			initPageUnknow();
 		} else {
 		 //have cookie
 			$("#accessDone").show();
 			$("#noAccess").hide();
+			$(".accessDone").show();
+			$(".noAccess").hide();
 			initPageLogged(address);
-		}
+		}	
+};
 
-});
+
 
 /****** general *****/
 function initDialogCreatedNewAccount(){	
@@ -211,12 +338,14 @@ function initPageUnknow(){
 }
 
 function intiRestoreAddress(){	
-	$('#restoreAddressSubmit').click(function (){
+	$('#restoreAddressSubmit2').click(function (){
+		alert('function');
 		var privKey=$.trim($('#privateKeyInput').val() ) ;
 		alert('privKey='+privKey);
 		$.ajax({
 	        type: "POST",
 	        url: "/api/restoreAccount",
+	        contentType: "application/json; charset=utf-8",
 	        dataType: 'json',
 	        data: privKey,
 	        cache: false,	
@@ -225,7 +354,7 @@ function intiRestoreAddress(){
 				$.cookie("keystore", data.encryptedPrivateKey);
 				$.cookie("address", data.address);
 	            updateBalance();
-	            alert('restoreAcoountDone');
+	            initPage();
 	        },
 	        error: function (e) {
 	            console.log("ERROR : ", e); 
@@ -240,6 +369,7 @@ function intiCreateNewAddress(){
 		$.ajax({
 	        type: "POST",
 	        url: "/api/createNewAccount",
+	        contentType: "application/json; charset=utf-8",
 	        dataType: 'json',
 	        cache: false,	
 	        success: function (data) {
@@ -262,7 +392,11 @@ function intiCreateNewAddress(){
 function showPopUpNewAccount(data){
 	$('#newAddress').text(data.address)
 	$('#newPrivateKey').text(data.privateKey)
-	$("#dialogCreatedNewAccount").dialog("open");
+	$('#createdNewAccountModal').modal('show');
+	$('#createdNewAccountModalButton').click(function(){
+		initPage();		
+	});
+
 }
 
 $('div#dialogCreatedNewAccount').on('dialogclose', function(event) {
@@ -303,6 +437,7 @@ function updateBalance(){
     	var address=$.cookie("address");
 		  $.ajax({
 		        type: "POST",
+		        contentType: "application/json; charset=utf-8",
 		        url: "/api/getBalance",
 		        data: address,
 		        dataType: 'json',
