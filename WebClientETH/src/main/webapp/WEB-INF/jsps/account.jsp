@@ -239,6 +239,8 @@ function initTransferDiv(){
 		
 		
 		var requestobject={
+				myAddress:$.cookie('address'),
+				privKey:$.cookie('keystore'),
 				addressTo:$('#addressTo').val(),
 				amount:$('#ammount').val()
 		};

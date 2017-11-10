@@ -6,6 +6,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
-import org.ucalproject.core.eth.MyEncryptionUtils;
-import org.ucalproject.core.eth.MyTransactionUtils;
-import org.ucalproject.core.eth.MyWalletUtils;
-import org.ucalproject.core.eth.MyWalletUtils2;
+import org.ucalproject.core.eth.MyWeb3jCaller;
+import org.ucalproject.core.eth.utils.MyEncryptionUtils;
+import org.ucalproject.core.eth.utils.MyTransactionUtils;
+import org.ucalproject.core.eth.utils.MyWalletUtils;
+import org.ucalproject.core.eth.utils.MyWalletUtils2;
 import org.ucalproject.model.dto.NewWalletDTO;
 import org.ucalproject.model.dto.RestoreWalletDTO;
 import org.ucalproject.model.input.CreateTransaction;
 import org.web3j.crypto.Credentials;
+import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.core.methods.response.Transaction;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,14 +42,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AccountController {
 
 	@Autowired
-	private MyWalletUtils myWalletUtils;
-	
-	@Autowired
 	private MyWalletUtils2 myWalletUtils2;
 	
 	@Autowired
 	private MyTransactionUtils myTransactionUtils;
-	
+
+	@Autowired
+	private MyWeb3jCaller web3jCaller;
 
 	/*
     @PostMapping("/uploadKey") 
@@ -87,6 +91,8 @@ public class AccountController {
 
 		
 		System.err.println("create new ccount:"+newWalletDTO.getAddress()+"\n"+newWalletDTO.getPrivateKey()+"\n");
+
+		System.err.println("create new ccount:"+newWalletDTO.getEncryptedPrivateKey());
 		
 		return ResponseEntity.ok(newWalletDTO);
     }
@@ -99,18 +105,17 @@ public class AccountController {
 		RestoreWalletDTO restored=new RestoreWalletDTO();
 		restored.setAddress(credentials.getAddress());
 		restored.setEncryptedPrivateKey(MyEncryptionUtils.encryptString(privateKeyInput));
-
 		
 		return ResponseEntity.ok(restored);
     }
 	
 	@RequestMapping("/api/getBalance")	
-	public ResponseEntity<?> getBalance(@RequestBody String address) {
+	public ResponseEntity<?> getBalance(@RequestBody String address) throws Exception{
 
-       System.out.println("string address="+address);
+//       System.out.println("string address="+address);
        
-        return ResponseEntity.ok(new String ("3.78690"));
 
+       return ResponseEntity.ok( myWalletUtils2.getBalance(address));
     }
 
 
@@ -118,11 +123,17 @@ public class AccountController {
 	@RequestMapping(value="/api/sendTransaction", method = RequestMethod.POST, consumes="application/json")	
 	public ResponseEntity<?> postExecuteTransaction(@RequestBody CreateTransaction transaction) throws Exception {
 
+//		System.out.println(transaction.getPrivKey());
 		
-		System.out.println(transaction);
-//	myTransactionUtils.createTransaction(web3j, credentials, toAddress, value);
+		Credentials decryptedWallet = myWalletUtils2.getWalletFromEncryptedPrivKey(transaction.getPrivKey());
+
+		RemoteCall<TransactionReceipt> createTransaction = myTransactionUtils.createTransaction(decryptedWallet, transaction.getAddressTo(), transaction.getAmount());
        
-        return ResponseEntity.ok(new String ("3.78690"));
+		TransactionReceipt send = createTransaction.send();
+		
+		System.out.println(send);
+		
+        return ResponseEntity.ok(send);
 
     }
 	

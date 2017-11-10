@@ -1,4 +1,4 @@
-package org.ucalproject.core.eth;
+package org.ucalproject.core.eth.utils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;

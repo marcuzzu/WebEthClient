@@ -1,4 +1,4 @@
-package org.ucalproject.core.eth;
+package org.ucalproject.core.eth.utils;
 
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;

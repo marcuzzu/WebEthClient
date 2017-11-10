@@ -58,7 +58,7 @@
 		<dependency>
 		  <groupId>org.web3j</groupId>
 		  <artifactId>core</artifactId>
-		  <version>2.3.1</version>
+		  <version>3.0.2</version>
 		</dependency>
 		<!-- #####################	ADITIONAL JSON LIB	################################ -->
 		<dependency>
